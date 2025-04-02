@@ -6,17 +6,17 @@ const booksController=require("../controllers/books")
 router.get("/",booksController.getAllBooks)
 
 // post a book
-router.post("/",booksController.postBook)
+router.post("/",booksController.postABook)
 
 // get a particular book
-router.get("/:id",booksController.getOneBook)
+router.get("/:id",booksController.getABook)
 
 // update a particular book
-router.patch("/:id",booksController.updateOneBook)
+router.patch("/:id",booksController.updateABook)
 
 
 // delete a particular book
-router.delete("/:id",booksController.deleteOneBook)
+router.delete("/:id",booksController.deleteABook)
 
 
 

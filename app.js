@@ -7,9 +7,10 @@ const passport=require("passport")
 const registerHandler = require("./routes/auth/register")
 const loginHandler = require("./routes/auth/login")
 const booksHandler=require("./routes/books")
+const cartHandler=require("./routes/cart")
 const app=express()
 dotenv.config()
-const PORT=process.env.PORT||8080
+const PORT=process.env.PORT||3030
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
@@ -22,9 +23,15 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 app.use("/books",booksHandler)
+
+app.use("/cart",cartHandler)
+
 app.use("/register", registerHandler)
+
 app.use("/login", loginHandler)
+
 app.get("/logout",(req,res)=>{
     req.logout(function(err) {
         if (err) { return next(err); }

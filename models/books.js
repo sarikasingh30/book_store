@@ -12,7 +12,7 @@ const bookSchema=new mongoose.Schema({
     language: { type: String, default:"English" },
     stock: { type: Number, default: 0 },
     categories: [{ type: String }],
-    ratings: { type: Number, min: 0, max: 5 },
+    ratings: { type: Number, min: 0, max: 5, default:0},
     reviews: [{ user:{type:mongoose.Schema.Types.ObjectId, ref:"user"}, comment: String, rating: Number }]
 
 },{

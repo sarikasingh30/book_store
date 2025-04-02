@@ -1,8 +1,9 @@
 const Books = require("../models/books");
-module.exports.postBook = async (req, res) => {
+
+module.exports.postABook = async (req, res) => {
   const bookData = req.body;
   try {
-    const done=await Books.create(bookData);
+    const done = await Books.create(bookData);
     res.status(200).send("book added successfully");
   } catch (error) {
     console.log("error", error);
@@ -24,7 +25,7 @@ module.exports.getAllBooks = async (req, res) => {
     res.status(500).send("An error occurred while getting books");
   }
 };
-module.exports.getOneBook = async (req, res) => {
+module.exports.getABook = async (req, res) => {
   //console.log(req.params.id);
   const id = req.params.id;
   try {
@@ -42,7 +43,7 @@ module.exports.getOneBook = async (req, res) => {
   }
 };
 
-module.exports.updateOneBook = async (req, res) => {
+module.exports.updateABook = async (req, res) => {
   const id = req.params.id;
   const book = req.body;
   try {
@@ -56,7 +57,7 @@ module.exports.updateOneBook = async (req, res) => {
     res.status(500).send("An error occurred while updating the book");
   }
 };
-module.exports.deleteOneBook = async (req, res) => {
+module.exports.deleteABook = async (req, res) => {
   const id = req.params.id;
   try {
     await Books.findByIdAndDelete(id);
