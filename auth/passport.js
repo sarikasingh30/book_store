@@ -1,74 +1,86 @@
-const passport = require("passport")
-const User = require("../models/users")
-const dotEnv = require("dotenv")
-dotEnv.config()
-const LocalStrategy = require("passport-local")
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
+const passport = require("passport");
+const User = require("../models/users");
+const bcrypt = require("bcrypt");
+const dotEnv = require("dotenv");
+dotEnv.config();
+const LocalStrategy = require("passport-local");
+var GoogleStrategy = require("passport-google-oauth20").Strategy;
 
-passport.use(new LocalStrategy({
-    usernameField: 'email',  // Use email instead of username
-    passwordField: 'password',  // Ensure the password field is correct
-},
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "email", // Use email instead of username
+      passwordField: "password", // Ensure the password field is correct
+    },
     async function (email, password, done) {
-        let user = await User.findOne({ email: email })
-        try {
-            if (!user) return done(null, false);
-            // if (!user.verifyPassword(password)) { return done(null, false); }
-            return done(null, user);
-        }
-        catch (err) {
-            return done(err, false)
-        }
+      try {
+        const user = await User.findOne({ email });
+        if (!user) return done(null, false, { message: "User not found" });
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch)
+          return done(null, false, { message: "Invalid credentials" });
+
+        return done(null, user);
+      } catch (err) {
+        return done(err);
+      }
     }
+  )
+);
 
-));
-
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3030/login/auth/google/callback",
-    scope: ['profile', 'email']
-},
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:3030/login/auth/google/callback",
+      scope: ["profile", "email"],
+    },
     async function (accessToken, refreshToken, profile, cb) {
-        console.log("AccessToken", accessToken)
-        console.log("refreshToken", refreshToken)
-        console.log("profile", profile)
-        
-        try {
-            let user = await User.findOne({
-                googleId: profile.id
-            })
-            if (user) return cb(null, user)
-            user = await User.create({
-                googleAccessToken: accessToken,
-                googleId: profile.id,
-                email:"dummy@break.com",
-                username:profile.displayName,
-                password:"dummy-password"
+      console.log("AccessToken", accessToken);
+      console.log("refreshToken", refreshToken);
+      console.log("profile", profile);
 
-            })
-            cb(null, user)
-        } catch (err) {
-            cb(err, false)
+      try {
+        let user = await User.findOne({
+          googleId: profile.id,
+        });
+        if (user) return cb(null, user);
 
-        }
+        // Because some Google accounts don’t expose emails (depending on privacy settings),
+        // this guarantees that you always have some unique email-like value, even if it's fake.
 
+        // const email =
+        //   profile.emails?.[0]?.value || `google_${profile.id}@noemail.com`;
+        // console.log(email);
+        user = await User.create({
+          googleAccessToken: accessToken,
+          googleId: profile.id,
+          email: "dummy@email.com",
+          username: profile.displayName,
+          password: "dummy-password",
+          provider: "google",
+        });
+        cb(null, user);
+      } catch (err) {
+        cb(err, false);
+      }
     }
-));
+  )
+);
 
 passport.serializeUser(function (user, done) {
-    done(null, user.id);
+  done(null, user.id);
 });
 
 passport.deserializeUser(async function (id, done) {
-    try {
-        let user = await User.findById(id)
-        done(null, user)
-    } 
-    catch (err) {
-        done(err, null);
-    }
-
+  try {
+    let user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
 });
 
-module.exports = passport
+module.exports = passport;

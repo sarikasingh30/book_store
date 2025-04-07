@@ -1,16 +1,50 @@
 const Books = require("../models/books");
 
 module.exports.postABook = async (req, res) => {
-  const bookData = req.body;
+  // const bookData = req.body;
   try {
-    const done = await Books.create(bookData);
-    res.status(200).send("book added successfully");
+    const {
+      title,
+      author,
+      publishedYear,
+      price,
+      description,
+      genre,
+      language,
+      stock,
+      categories,
+    } = req.body;
+
+    const newBook = new Books({
+      title,
+      author,
+      publishedYear,
+      price,
+      description,
+      genre,
+      language,
+      stock,
+      categories: categories ? categories.split(",") : [],
+      coverImage: {
+        url: req.file.path,
+        public_id: req.file.filename,
+      },
+    });
+
+    await newBook.save();
+    res
+      .status(201)
+      .json({ message: "Book created successfully", book: newBook });
   } catch (error) {
-    console.log("error", error);
-    res.status(500).send("An error occurred while adding the book");
+    console.error(error);
+    res.status(500).json({ error: "Failed to create book" });
   }
 };
+
 module.exports.getAllBooks = async (req, res) => {
+  const token = req.cookies.token;
+  console.log("Token from cookie:", token);
+
   try {
     const books = await Books.find().populate({
       path: "reviews.user",
