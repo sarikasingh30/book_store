@@ -48,12 +48,6 @@ passport.use(
         });
         if (user) return cb(null, user);
 
-        // Because some Google accounts don’t expose emails (depending on privacy settings),
-        // this guarantees that you always have some unique email-like value, even if it's fake.
-
-        // const email =
-        //   profile.emails?.[0]?.value || `google_${profile.id}@noemail.com`;
-        // console.log(email);
         user = await User.create({
           googleAccessToken: accessToken,
           googleId: profile.id,

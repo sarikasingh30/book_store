@@ -4,12 +4,6 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 const myPassport = require("../../auth/passport");
 
-router.get("/", (req, res) => {
-  if (req.user) {
-    return res.redirect("/books"); //  Redirect to profile if user is already logged in
-  }
-});
-
 router.post(
   "/",
   myPassport.authenticate("local", { failureRedirect: "/login" }),
@@ -18,9 +12,13 @@ router.post(
     const user = req.user;
 
     const token = jwt.sign(
-      { id: user._id, email: user.email, role: user.role }, // customize payload
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      }, // customize payload
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1h" }
     );
 
     res.cookie("token", token, {
@@ -28,10 +26,10 @@ router.post(
       //   secure: process.env.NODE_ENV === "production",
       secure: false,
       sameSite: "strict",
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      maxAge: 1000 * 60 * 60,
     });
 
-    res.redirect("/books");
+    res.status(200).send("Login Successful");
   }
 );
 
@@ -48,11 +46,15 @@ router.get(
   }),
   function (req, res) {
     user = req.user;
-    console.log(req.user);
+    // console.log(req.user);
     const token = jwt.sign(
-      { id: user._id, username: user.username, role: user.role }, // customize payload
+      {
+        id: user._id,
+        username: user.username,
+        role: user.role,
+      }, // customize payload
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1h" }
     );
 
     res.cookie("token", token, {
@@ -60,9 +62,9 @@ router.get(
       //   secure: process.env.NODE_ENV === "production",
       secure: false,
       sameSite: "strict",
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      maxAge: 1000 * 60 * 60,
     });
-    res.redirect("/books");
+    res.status(200).send("Login Successful");
   }
 );
 

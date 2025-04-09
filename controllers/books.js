@@ -43,8 +43,6 @@ module.exports.postABook = async (req, res) => {
 
 module.exports.getAllBooks = async (req, res) => {
   const token = req.cookies.token;
-  console.log("Token from cookie:", token);
-
   try {
     const books = await Books.find().populate({
       path: "reviews.user",

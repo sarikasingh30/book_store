@@ -6,6 +6,7 @@ const { storage } = require("../utils/cloudinary");
 const verifyToken = require("../middlewares/authMiddleware");
 const isAdmin = require("../middlewares/authorizeRole");
 const upload = multer({ storage });
+
 // get all books
 router.get("/", booksController.getAllBooks);
 
