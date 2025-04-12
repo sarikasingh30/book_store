@@ -25,7 +25,7 @@ router.post(
       httpOnly: true,
       //   secure: process.env.NODE_ENV === "production",
       secure: false,
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 1000 * 60 * 60,
     });
 
@@ -61,7 +61,7 @@ router.get(
       httpOnly: true,
       //   secure: process.env.NODE_ENV === "production",
       secure: false,
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 1000 * 60 * 60,
     });
     res.status(200).send("Login Successful");

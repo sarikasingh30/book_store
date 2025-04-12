@@ -9,17 +9,20 @@ const dotenv = require("dotenv");
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const registerHandler = require("./routes/auth/register");
+const checkAuthHandler = require("./routes/auth/checkAuth");
 const loginHandler = require("./routes/auth/login");
 const booksHandler = require("./routes/books");
 const cartHandler = require("./routes/cart");
+const moodSuggestionHandler = require("./routes/mood");
+const summaryHandler = require("./routes/summary");
 
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 3030;
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 //Setting up the session
 app.use(
   session({
@@ -32,27 +35,15 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use("/api/check-auth", checkAuthHandler);
 app.use("/books", booksHandler);
-
 app.use("/cart", cartHandler);
-
+app.use("/api/mood", moodSuggestionHandler);
+app.use("/api/summary", summaryHandler);
 app.use("/register", registerHandler);
 
 app.use("/login", loginHandler);
 
-app.get("/api/check-auth", (req, res) => {
-  const token = req.cookies.token;
-  if (!token) return res.json({ authenticated: false });
-
-  try {
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(user);
-    res.json({ authenticated: true, user });
-  } catch (err) {
-    res.json({ authenticated: false });
-  }
-});
 app.get("/logout", (req, res) => {
   req.logout(function (err) {
     if (err) {

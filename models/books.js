@@ -15,7 +15,7 @@ const bookSchema = new mongoose.Schema(
     genre: { type: String },
     language: { type: String, default: "English" },
     stock: { type: Number, default: 0 },
-    categories: [{ type: String }],
+    categories: [{ type: String, required: true }],
     ratings: { type: Number, min: 0, max: 5, default: 0 },
     reviews: [
       {

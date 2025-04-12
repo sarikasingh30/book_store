@@ -42,7 +42,6 @@ module.exports.postABook = async (req, res) => {
 };
 
 module.exports.getAllBooks = async (req, res) => {
-  const token = req.cookies.token;
   try {
     const books = await Books.find().populate({
       path: "reviews.user",
@@ -57,6 +56,7 @@ module.exports.getAllBooks = async (req, res) => {
     res.status(500).send("An error occurred while getting books");
   }
 };
+
 module.exports.getABook = async (req, res) => {
   //console.log(req.params.id);
   const id = req.params.id;
@@ -72,6 +72,15 @@ module.exports.getABook = async (req, res) => {
   } catch (error) {
     console.log("error", error);
     res.status(500).send("An error occurred while getting the book");
+  }
+};
+
+module.exports.topRated = async (req, res) => {
+  try {
+    const topBooks = await Books.find().sort({ rating: -1 }).limit(6);
+    res.status(200).json(topBooks);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch top-rated books" });
   }
 };
 

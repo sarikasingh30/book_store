@@ -18,7 +18,8 @@ router.post(
   upload.single("coverImage"),
   booksController.postABook
 );
-
+// get top-rated 7 books
+router.get("/top-rated", booksController.topRated);
 // get a particular book
 router.get("/:id", booksController.getABook);
 
