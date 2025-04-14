@@ -10,11 +10,15 @@ module.exports.postRegister = async (req, res) => {
       return res.send("Email already exists");
     }
     bcrypt.hash(password, 10, async function (err, hash) {
+      if (err) {
+        return res.status(500).send("Error hashing password");
+      }
+
       await Users.create({ username, email, password: hash });
+      res.status(201).send("User registered successfully");
     });
-    res.status(201).send("User registered successfully");
-    res.redirect("/login");
   } catch (error) {
     console.log(error);
+    res.status(500).send("Internal Server Error");
   }
 };

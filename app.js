@@ -45,13 +45,16 @@ app.use("/register", registerHandler);
 app.use("/login", loginHandler);
 
 app.get("/logout", (req, res) => {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect("/login");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  req.logout(() => {
+    res.status(200).send("Logged out successfully");
   });
 });
+
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {

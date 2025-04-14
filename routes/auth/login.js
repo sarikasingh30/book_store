@@ -15,8 +15,10 @@ router.post(
       {
         id: user._id,
         email: user.email,
+        username: user.username,
         role: user.role,
-      }, // customize payload
+        provider: user.provider,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -29,20 +31,29 @@ router.post(
       maxAge: 1000 * 60 * 60,
     });
 
-    res.status(200).send("Login Successful");
+    res.status(200).json({
+      message: "Login Successful",
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        provider: user.provider,
+      },
+    });
   }
 );
 
 router.get(
   "/google",
-  myPassport.authenticate("google", { scope: ["profile"] })
+  myPassport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(
   "/auth/google/callback",
   myPassport.authenticate("google", {
-    failureMessage: true,
-    failureRedirect: "/login",
+    failureRedirect: "http://localhost:3000/login",
+    session: true, // <-- this must be enabled
   }),
   function (req, res) {
     user = req.user;
@@ -52,6 +63,8 @@ router.get(
         id: user._id,
         username: user.username,
         role: user.role,
+        email: user.email,
+        provider: user.provider,
       }, // customize payload
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
@@ -64,7 +77,7 @@ router.get(
       sameSite: "lax",
       maxAge: 1000 * 60 * 60,
     });
-    res.status(200).send("Login Successful");
+    res.status(201).redirect("http://localhost:3000");
   }
 );
 

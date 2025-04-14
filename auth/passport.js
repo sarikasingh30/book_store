@@ -34,8 +34,11 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+
       callbackURL: "http://localhost:3030/login/auth/google/callback",
       scope: ["profile", "email"],
+      accessType: "offline",
+      prompt: "consent",
     },
     async function (accessToken, refreshToken, profile, cb) {
       console.log("AccessToken", accessToken);
@@ -43,19 +46,25 @@ passport.use(
       console.log("profile", profile);
 
       try {
-        let user = await User.findOne({
+        let existingUser = await User.findOne({
           googleId: profile.id,
         });
-        if (user) return cb(null, user);
+        console.log("existing.......", existingUser);
 
+        if (existingUser) {
+          return cb(null, existingUser); // Login with existing user
+        }
+        emailVal = `${profile.name.givenName}.${profile.id}@baba.com`;
         user = await User.create({
           googleAccessToken: accessToken,
           googleId: profile.id,
-          email: "dummy@email.com",
+          email: emailVal,
           username: profile.displayName,
           password: "dummy-password",
           provider: "google",
         });
+        if (user) return cb(null, user);
+
         cb(null, user);
       } catch (err) {
         cb(err, false);
