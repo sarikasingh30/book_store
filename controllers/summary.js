@@ -1,12 +1,24 @@
 require("dotenv").config();
+const { redisClient, connectRedis } = require("../config/redisclient");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
 module.exports.postSummary = async (req, res) => {
   try {
-    const { title, author, publishedYear } = req.body;
-    if (!title)
-      return res.status(400).json({ error: "Book title is required." });
+    await connectRedis();
+    const { id, title, author, publishedYear } = req.body;
+    if (!title || !id)
+      return res
+        .status(400)
+        .json({ error: "Book title or/And id is required." });
+
+    const cacheKey = `summary:${id}`;
+    const cachedSummary = await redisClient.get(cacheKey);
+
+    if (cachedSummary) {
+      console.log("Cache hit!");
+      return res.json({ summary: cachedSummary });
+    }
 
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -15,7 +27,7 @@ module.exports.postSummary = async (req, res) => {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-
+    await redisClient.set(cacheKey, text, { EX: 86400 });
     res.json({ summary: text });
   } catch (error) {
     console.error("Gemini error:", error.message);

@@ -41,15 +41,14 @@ passport.use(
       prompt: "consent",
     },
     async function (accessToken, refreshToken, profile, cb) {
-      console.log("AccessToken", accessToken);
-      console.log("refreshToken", refreshToken);
-      console.log("profile", profile);
+      // console.log("AccessToken", accessToken);
+      // console.log("refreshToken", refreshToken);
+      // console.log("profile", profile);
 
       try {
         let existingUser = await User.findOne({
           googleId: profile.id,
         });
-        console.log("existing.......", existingUser);
 
         if (existingUser) {
           return cb(null, existingUser); // Login with existing user
