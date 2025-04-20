@@ -32,8 +32,8 @@ app.use(
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URL }),
     cookie: {
       httpOnly: true,
-      secure: true, // required on HTTPS like render
-      sameSite: "none", // allow cross-origin
+      secure: process.env.NODE_ENV === "production", // false in dev
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
   })
 );
