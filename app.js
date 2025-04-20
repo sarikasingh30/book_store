@@ -30,6 +30,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URL }),
+    sameSite: "none",
   })
 );
 
