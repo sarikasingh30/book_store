@@ -44,9 +44,8 @@ app.use("/api/check-auth", checkAuthHandler);
 app.use("/books", booksHandler);
 app.use("/api/mood", moodSuggestionHandler);
 app.use("/api/summary", summaryHandler);
-app.use("/register", registerHandler);
-
 app.use("/login", loginHandler);
+app.use("/register", registerHandler);
 app.use("/cw", cartHandler);
 
 app.get("/logout", (req, res) => {
