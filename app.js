@@ -55,13 +55,21 @@ app.use("/register", registerHandler);
 app.use("/cw", cartHandler);
 
 app.get("/logout", (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-  });
-  req.logout(() => {
-    res.status(200).send("Logged out successfully");
+  req.logout(function (err) {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error while logging out");
+    }
+
+    // DESTROY session after logout
+    req.session.destroy(function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Error while destroying session");
+      }
+      res.clearCookie("connect.sid"); // Important to clear cookie from browser
+      res.status(200).send("Logged out successfully");
+    });
   });
 });
 
