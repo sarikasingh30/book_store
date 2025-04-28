@@ -40,7 +40,7 @@ router.get(
   function (req, res) {
     const user = req.user;
     console.log("googleuser", user);
-    res.status(201).redirect(process.env.FRONTEND_URL);
+    res.status(201).redirect(process.env.FRONTEND_URL + "/");
   }
 );
 
