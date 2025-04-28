@@ -40,34 +40,30 @@ passport.use(
       accessType: "offline",
       prompt: "consent",
     },
-    async function (accessToken, refreshToken, profile, cb) {
+    async function (accessToken, refreshToken, profile, done) {
       // console.log("AccessToken", accessToken);
       // console.log("refreshToken", refreshToken);
       // console.log("profile", profile);
 
       try {
-        let existingUser = await User.findOne({
+        let user = await User.findOne({
           googleId: profile.id,
         });
 
-        if (existingUser) {
-          return cb(null, existingUser); // Login with existing user
+        if (!user) {
+          emailVal = `${profile.name.givenName}.${profile.id}@baba.com`;
+          user = await User.create({
+            googleAccessToken: accessToken,
+            googleId: profile.id,
+            email: emailVal,
+            username: profile.displayName,
+            password: null,
+            provider: "google",
+          });
         }
-        emailVal = `${profile.name.givenName}.${profile.id}@baba.com`;
-        const user = new User({
-          googleAccessToken: accessToken,
-          googleId: profile.id,
-          email: emailVal,
-          username: profile.displayName,
-          password: null,
-          provider: "google",
-        });
-        await user.save();
-        if (user) return cb(null, user);
-
-        cb(null, false);
+        return done(null, user);
       } catch (err) {
-        cb(err, false);
+        done(err, false);
       }
     }
   )
