@@ -40,16 +40,7 @@ router.get(
   function (req, res) {
     const user = req.user;
     console.log("googleuser", user);
-    res.status(201).json({
-      message: "Login Successful",
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        provider: user.provider,
-      },
-    });
+    res.status(201).redirect(process.env.FRONTEND_URL);
   }
 );
 
