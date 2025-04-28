@@ -1,5 +1,4 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
 const router = express.Router();
 const myPassport = require("../../auth/passport");
 require("dotenv").config();
@@ -39,7 +38,7 @@ router.get(
   }),
   function (req, res) {
     const user = req.user;
-    console.log("googleuser", user);
+    // console.log("googleuser", user);
     res.status(201).redirect(process.env.FRONTEND_URL + "/");
   }
 );

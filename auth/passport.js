@@ -51,13 +51,13 @@ passport.use(
         });
 
         if (!user) {
-          emailVal = `${profile.name.givenName}.${profile.id}@baba.com`;
+          let emailVal = `${profile.name.givenName}.${profile.id}@baba.com`;
           user = await User.create({
             googleAccessToken: accessToken,
             googleId: profile.id,
             email: emailVal,
             username: profile.displayName,
-            password: null,
+            // password: null,
             provider: "google",
           });
         }
