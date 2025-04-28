@@ -59,12 +59,12 @@ passport.use(
           googleId: profile.id,
           email: emailVal,
           username: profile.displayName,
-          password: "dummy-password",
+          password: null,
           provider: "google",
         });
         if (user) return cb(null, user);
 
-        cb(null, user);
+        cb(null, false);
       } catch (err) {
         cb(err, false);
       }
