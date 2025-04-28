@@ -1,5 +1,6 @@
 module.exports.check = (req, res) => {
   // Passport session-based check (current method)
+
   if (req.isAuthenticated()) {
     // Send user data from session
     return res.status(200).json({

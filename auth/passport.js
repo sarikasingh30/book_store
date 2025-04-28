@@ -54,7 +54,7 @@ passport.use(
           return cb(null, existingUser); // Login with existing user
         }
         emailVal = `${profile.name.givenName}.${profile.id}@baba.com`;
-        user = await User.create({
+        const user = new User({
           googleAccessToken: accessToken,
           googleId: profile.id,
           email: emailVal,
@@ -62,6 +62,7 @@ passport.use(
           password: null,
           provider: "google",
         });
+        await user.save();
         if (user) return cb(null, user);
 
         cb(null, false);
