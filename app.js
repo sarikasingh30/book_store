@@ -19,7 +19,13 @@ const summaryHandler = require("./routes/summary");
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 3030;
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL, // Your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, // Allow cookies or sessions if needed
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
